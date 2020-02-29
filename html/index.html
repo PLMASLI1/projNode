@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="its2020">
 
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>PAI2019</title>
+    <title>ITS2020</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/index.css">
@@ -11,13 +11,18 @@
     <script src="/js/bootstrap.min.js"></script>
 </head>
     
-<body class="workarea">
+<body class="workarea" ng-controller="Ctrl1 as ctrl">
     
     <div class="container">
 
-		<h1>Zaczynamy!</h1>
+		<h1>Zaczynamy ITS2020!</h1>
 	
-		Projekt bazowy do dalszych rozważań.
+        Projekt bazowy do dalszych rozważań.
+        
+        <div ng-bind="ctrl.x"></div>
+        <input type="number" ng-model="ctrl.x"/>
+        <button ng-click="ctrl.getDane()">Pobierz</button>
+        <button ng-click="ctrl.postDane()">Ustaw</button>
 	</div>
     
 <script src="/js/angular.min.js"></script>

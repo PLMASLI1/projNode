@@ -57,6 +57,12 @@ var serveStaticContent = function (response, absPath) {
     });
 }
 
+var konto = {
+    firstName: "Mariusz",
+    lastName: "Jarocki",
+    balance: 500
+};
+
 var httpServer = http.createServer();
 
 httpServer.on('request', function (req, rep) {
@@ -69,16 +75,39 @@ httpServer.on('request', function (req, rep) {
 		serveStaticContent(rep, 'img/favicon.ico');
     } else if(/^\/(html|css|js|fonts|img)\//.test(req.url)) {
         serveStaticContent(rep, '.' + req.url);
-    } else {
+    } else if(req.url == '/dane') {
+        if(req.method == "POST") {
+            var payload = "";
+            req.on("data", function(data) {
+                payload += data;
+            }).on("end", function() {
+                var retcode = 200;
+                try {
+                    var dane = JSON.parse(payload);
+                    konto.balance = dane.x;
+                } catch(ex) {
+                    retcode = 400;
+                }
+                rep.writeHead(retcode, "OK", { contentType: "application/json" });
+                rep.write(JSON.stringify(konto));
+                konto.balance++;
+                rep.end();
+            });
+        } else {
+            rep.writeHead(200, "OK", { contentType: "application/json" });
+            rep.write(JSON.stringify(konto));
+            konto.balance++;
+            rep.end();
+        }
+    } else {   
 	    sendErrorOnStaticContent(rep, 403);
     }
-
 });
 
 try {
     httpServer.listen(config.port);
+    console.log("HTTP server is listening on the port " + config.port);
 } catch(ex) {
     console.log("Port " + config.listeningPort + " cannot be used");
     process.exit();
 }
-console.log("HTTP server is listening on the port " + config.port);
