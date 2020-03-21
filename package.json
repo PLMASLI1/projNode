@@ -1,5 +1,5 @@
 {
-  "name": "its2020",
+  "name": "its2020d",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -7,9 +7,17 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/mariusz.jarocki/its2020d.git"
+  },
   "author": "Mariusz Jarocki",
   "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/mariusz.jarocki/its2020d/issues"
+  },
+  "homepage": "https://gitlab.com/mariusz.jarocki/its2020d#readme",
   "dependencies": {
-    "mime": "^2.4.4"
+    "node-static": "^0.7.11"
   }
 }
