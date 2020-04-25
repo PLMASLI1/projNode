@@ -1,4 +1,4 @@
-# its2020
+# APP 2020
 
 ## Struktura projektu
 
@@ -11,3 +11,6 @@ Backend, jak poprzednio, zawarty jest w głównym katalogu projektu. Podzieliłe
 * config.js - konfiguracja projektu
 * lib.js - funkcje wspólne, m.in. wysyłanie danych i błędów, kompletowanie payloadu
 * rest.js - moduł z kodem usług restowych
+* common.js - wspólne obiekty dla wielu modułów
+
+Program domyślnie (config.js) korzysta z silnika bazy danych MongoDB, uruchomionego na lokalnym komputerze (localhost).
