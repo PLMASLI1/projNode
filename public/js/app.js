@@ -1,6 +1,6 @@
-var app = angular.module("app2020", []);
+var app = angular.module("app2020", ['ngSanitize', 'ngAnimate', 'ui.bootstrap']);
 
-app.controller("Ctrl1", ["$scope", "$http", function($scope, $http) {
+app.controller("Ctrl1", ["$scope", "$http", "$uibModal", function($scope, $http, $uibModal) {
     var ctrl = this;
 
     ctrl.persons = [];
@@ -39,6 +39,45 @@ app.controller("Ctrl1", ["$scope", "$http", function($scope, $http) {
     ctrl.next = function() {
         ctrl.skip += ctrl.limit;
         ctrl.loadPersons();
+    };
+
+    ctrl.personClick = function(_id) {
+        $http.get('/person?_id=' + _id).then(
+            function(rep) {
+                var options = { data: rep.data };
+                // open modal window with person data
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    ariaLabelledBy: 'modal-title-top',
+                    ariaDescribedBy: 'modal-body-top',
+                    templateUrl: 'editPersonDialog.html',
+                    controller: 'EditPersonCtrl',
+                    controllerAs: 'ctrl',
+                    resolve: {
+                        editPersonOptions: function () {
+                            return options;
+                        }
+                    }
+                });
+        
+                modalInstance.result.then(
+                    function (ret) {
+                        if(ret == 'delete') {
+
+                        } else if(ret == 'save') {
+                            if(options.data._id) {
+
+                            } else {
+
+                            }
+                        }
+                    },
+                    function (ret) {}
+                );
+        
+            },
+            function() {}
+        );
     };
 
 }]);

@@ -30,7 +30,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="person in ctrl.persons">
+                <tr ng-repeat="person in ctrl.persons" ng-click="ctrl.personClick(person._id)">
                     <td ng-bind="person.firstName"></td>
                     <td ng-bind="person.lastName"></td>
                     <td ng-bind="person.email"></td>
@@ -44,8 +44,11 @@
 	</div>
 
 <script src="js/angular.min.js"></script>
+<script src="js/angular-sanitize.min.js"></script>
+<script src="js/angular-animate.min.js"></script>
 <script src="js/ui-bootstrap-tpls.min.js"></script>
 
 <script src="js/app.js"></script>
+<script src="js/editPersonCtrl.js"></script>
 
 </body></html>
