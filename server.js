@@ -21,7 +21,7 @@ httpServer.on('request', function (req, rep) {
 
     var endpoint = url.parse(req.url, true).pathname;
     var query = url.parse(req.url, true).query;
-    var payload = lib.getPayload(req, rep, function(rep, payload) {
+    lib.getPayload(req, rep, function(rep, payload) {
 
         // create object name from endpoint url: /example/data => example.data
         var objName = endpoint.replace('/', ' ').trim().replace(' ', '.');

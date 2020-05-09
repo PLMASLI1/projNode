@@ -4,6 +4,7 @@ var config = module.exports = {
     port: 8888,
     dbUrl: "mongodb://localhost:27017",
     database: "app2020",
+    defaultLimit: 10,
 
     examplePersons: [
         {
