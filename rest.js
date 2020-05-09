@@ -83,12 +83,16 @@ var rest = module.exports = {
                             ]
                         };
                     }
-                    common.persons.find(select).skip(skip).limit(limit).toArray(function(err, personsArray) {
-                        if(!err) {
-                            lib.sendJson(rep, personsArray);
-                        } else {
-                            lib.sendError(rep, 404, 'Not found');
-                        }
+                    common.persons.find().count(function(err, countAll) {
+                        common.persons.find(select).count(function(err, countFiltered) {
+                            common.persons.find(select).skip(skip).limit(limit).toArray(function(err, personsArray) {
+                                if(!err) {
+                                    lib.sendJson(rep, { data: personsArray, filtered: countFiltered, count: countAll });
+                                } else {
+                                    lib.sendError(rep, 404, 'Not found');
+                                }
+                            });
+                        });    
                     });
                     break;
                 default:

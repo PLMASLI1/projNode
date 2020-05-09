@@ -4,46 +4,41 @@ app.controller("Ctrl1", ["$scope", "$http", function($scope, $http) {
     var ctrl = this;
 
     ctrl.persons = [];
-    ctrl.person_id = null;
-    ctrl.person = {};
+    ctrl.skip = 0;
+    ctrl.limit = 10;
+    ctrl.search = '';
+    ctrl.filtered = 0;
+    ctrl.count = 0;
 
     ctrl.loadPersons = function() {
-        $http.get("/persons").then(
+        $http.get("/persons?skip=" + ctrl.skip + "&limit=" + ctrl.limit + "&search=" + ctrl.search).then(
             function(rep) {
-                ctrl.persons = rep.data;
-                if(!ctrl.person_id && ctrl.persons.length > 0) {
-                    ctrl.person_id = ctrl.persons[0]._id;
-                    ctrl.loadPerson();
-                }
-            },
+                ctrl.persons = rep.data.data;
+                ctrl.filtered = rep.data.filtered;
+                ctrl.count = rep.data.count;
+                        },
             function(err) {
                 ctrl.persons = [];
-            }
+                ctrl.filtered = 0;
+                ctrl.count = 0;                        }
         );
     };
 
-    ctrl.loadPerson = function() {
-        $http.get("/person?_id=" + ctrl.person_id).then(
-            function(rep) {
-                ctrl.person = rep.data;
-                $scope.form1.$setPristine();
-            },
-            function(err) {
-                ctrl.person = {};
-            }
-        );
+    ctrl.loadPersonsWithZeroSkip = function() {
+        ctrl.skip = 0;
+        ctrl.loadPersons();
     };
 
     ctrl.loadPersons();
 
-    ctrl.changePerson = function() {
-        $http.put("/person", ctrl.person).then(
-            function(rep) {
-                ctrl.loadPersons();
-                ctrl.person = rep.data;
-                $scope.form1.$setPristine();
-            },
-            function(err) {}    
-        );
-    }
+    ctrl.prev = function() {
+        ctrl.skip -= ctrl.limit;
+        ctrl.loadPersons();
+    };
+
+    ctrl.next = function() {
+        ctrl.skip += ctrl.limit;
+        ctrl.loadPersons();
+    };
+
 }]);
