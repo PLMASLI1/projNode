@@ -63,12 +63,12 @@ app.controller("Ctrl1", ["$scope", "$http", "$uibModal", function($scope, $http,
                 modalInstance.result.then(
                     function (ret) {
                         if(ret == 'delete') {
-
+                            console.log('delete ' + options.data._id);
                         } else if(ret == 'save') {
                             if(options.data._id) {
-
+                                console.log('update ', options.data);
                             } else {
-
+                                console.log('insert ', options.data);
                             }
                         }
                     },

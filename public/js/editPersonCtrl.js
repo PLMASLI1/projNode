@@ -6,7 +6,7 @@ app.controller('EditPersonCtrl', ['$uibModalInstance', 'editPersonOptions', func
     ctrl.opt = editPersonOptions;
 
     ctrl.save = function() { $uibModalInstance.close('save'); };
-    ctrl.delete = function() {};
+    ctrl.delete = function() { $uibModalInstance.close('delete'); };
     ctrl.cancel = function() { $uibModalInstance.dismiss('cancel'); };
 
 }]);
