@@ -6,7 +6,7 @@ var config = require('./config');
 
 var rest = module.exports = {
 
-    'person': function(rep, method, query, payload) {
+    'person': function(rep, method, query, payload, session) {
         switch(method) {
             case 'GET':
                 try {
@@ -66,7 +66,7 @@ var rest = module.exports = {
         }
     },
 
-    'persons': function(rep, method, query, payload) {
+    'persons': function(rep, method, query, payload, session) {
         try {
             switch(method) {
                 case 'GET':

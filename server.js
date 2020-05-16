@@ -5,6 +5,8 @@ var url = require('url');
 // external modules
 var static = require('node-static');
 var mongodb = require('mongodb');
+var cookies = require('cookies');
+var uuid = require('uuid');
 
 // our modules
 var common = require('./common');
@@ -19,6 +21,19 @@ var httpServer = http.createServer();
 // handling HTTP requests
 httpServer.on('request', function (req, rep) {
 
+    // maintain the existing session or create new one
+    var appCookies = new cookies(req, rep);
+    var session = appCookies.get('session');
+    var now = Date.now();
+    if(!session || !common.sessions[session]) {
+        session = uuid.v4();
+        common.sessions[session] = { from: req.connection.remoteAddress, created: now, touched: now, login: null, role: 0 };
+        console.log('New session ' + session + ': ' + JSON.stringify(common.sessions[session]));
+    } else {
+        common.sessions[session].touched = now;
+    }
+    appCookies.set('session', session, { httpOnly: false });
+    
     var endpoint = url.parse(req.url, true).pathname;
     var query = url.parse(req.url, true).query;
     lib.getPayload(req, rep, function(rep, payload) {
@@ -28,8 +43,8 @@ httpServer.on('request', function (req, rep) {
 
         if(rest[objName] && typeof rest[objName] == 'function') {
             try {
-                console.log('XHR rest.' + objName, req.method, 'query=' + JSON.stringify(query), 'payload=' + JSON.stringify(payload));
-                rest[objName](rep, req.method, query, payload);
+                console.log(session + ' XHR rest.' + objName, req.method, 'query=' + JSON.stringify(query), 'payload=' + JSON.stringify(payload));
+                rest[objName](rep, req.method, query, payload, session);
             } catch(ex) {
                 lib.sendError(rep, 500, 'Server error ');
             }

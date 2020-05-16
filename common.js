@@ -2,6 +2,7 @@ var config = require('./config');
 
 var common = module.exports = {
 
+    sessions: {},
     persons: null,
 
     initializeData: function(db) {
