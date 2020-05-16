@@ -18,6 +18,8 @@
 
 		<h1>APP 2020</h1>
     
+        <button class="btn btn-primary fa fa-plus" ng-click="ctrl.newPerson()"></button>
+        
         <form style="float: right;" class="form-inline">
             <input class="form-control" type="text" ng-model="ctrl.search" ng-change="ctrl.loadPersonsWithZeroSkip()"/>
             <span class="badge" ng-bind="ctrl.filtered"></span>
