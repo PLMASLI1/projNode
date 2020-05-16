@@ -16,9 +16,28 @@ app.config(['$routeProvider', '$locationProvider', 'routes', function($routeProv
 	$routeProvider.otherwise({ redirectTo: '/' });
 }]);
 
+// common service
+app.service('common', [ '$uibModal', function($uibModal) {
+    var common = this;
+    
+    // logged user
+    common.login = null;
+    common.role =  0;
+
+}]);
+
 // SP skeleton controller
-app.controller("BodyCtrl", ['$scope', '$location', 'routes', function($scope, $location, routes) {
+app.controller("BodyCtrl", ['$scope', '$location', '$http', '$uibModal', 'routes', 'common', function($scope, $location, $http, $uibModal, routes, common) {
     var ctrl = this;
+
+    // who am I
+    $http.get('/login').then(
+        function(rep) {
+            common.login = rep.data.login;
+            common.role = rep.data.role;
+        },
+        function(err) {}
+    );
 
     // navigation building
     ctrl.menu = [];
@@ -37,4 +56,46 @@ app.controller("BodyCtrl", ['$scope', '$location', 'routes', function($scope, $l
         return page === $location.path() ? 'active' : '';
     };
 
+    // login/logout icon
+    ctrl.loginIcon = function() {
+        return common.login ? common.login + '&nbsp;<span class="fa fa-lg fa-sign-out"></span>' : '<span class="fa fa-lg fa-sign-in"></span>';
+    };
+
+    // login function
+    ctrl.login = function() {
+        if(common.login) {
+            // log out
+            $http.delete('/login').then(
+                function(rep) {
+                    common.login = null;
+                    common.role = 0;
+                    console.log('Logout');
+                },
+                function(err) {}
+            );
+        } else {
+            // log in
+            var modalInstance = $uibModal.open({
+                animation: true,
+                ariaLabelledBy: 'modal-title-top',
+                ariaDescribedBy: 'modal-body-top',
+                templateUrl: 'loginDialog.html',
+                controller: 'LoginCtrl',
+                controllerAs: 'ctrl',
+            });
+    
+            modalInstance.result.then(
+                function(ret) { 
+                    if(ret) {
+                        console.log('Witaj na pokładzie, ' + ret);
+                    } else {
+                        console.log('Logowanie nieudane');
+                    }
+                },
+                function() {}
+            );
+    
+        }
+    };
+    
 }]);

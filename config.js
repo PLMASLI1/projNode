@@ -6,6 +6,10 @@ var config = module.exports = {
     database: "app2020",
     defaultLimit: 10,
 
+    exampleUsers: [
+        {login: "admin", password: "admin1", role: 1 }
+    ],
+
     examplePersons: [
         {
             firstName: 'Mariusz',

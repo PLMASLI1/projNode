@@ -42,12 +42,8 @@ httpServer.on('request', function (req, rep) {
         var objName = endpoint.replace('/', ' ').trim().replace(' ', '.');
 
         if(rest[objName] && typeof rest[objName] == 'function') {
-            try {
-                console.log(session + ' XHR rest.' + objName, req.method, 'query=' + JSON.stringify(query), 'payload=' + JSON.stringify(payload));
-                rest[objName](rep, req.method, query, payload, session);
-            } catch(ex) {
-                lib.sendError(rep, 500, 'Server error ');
-            }
+            console.log(session + ' XHR rest.' + objName, req.method, 'query=' + JSON.stringify(query), 'payload=' + JSON.stringify(payload));
+            rest[objName](rep, req.method, query, payload, session);
         } else {
             console.log(req.method, endpoint);
             fileServer.serve(req, rep);

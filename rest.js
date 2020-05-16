@@ -6,6 +6,40 @@ var config = require('./config');
 
 var rest = module.exports = {
 
+    'login': function(rep, method, query, payload, session) {
+        if(!common.sessions[session]) {
+            lib.sendError(rep, 404, 'Session not found');
+            return;
+        }
+        switch(method) {
+            case 'GET':
+                lib.sendJson(rep, common.sessions[session]);
+                break;
+            case 'POST':
+                if(!payload.login) {
+                    lib.sendError(rep, 401, 'No login specified');
+                    return;        
+                }
+                common.users.findOne({ login: payload.login, password: payload.password }, function(err, validUser) {
+                    if(err || !validUser) {
+                        lib.sendError(rep, 401, 'Authentication failed');
+                        return;            
+                    }
+                    common.sessions[session].login = validUser.login;
+                    common.sessions[session].role = validUser.role;
+                    lib.sendJson(rep, common.sessions[session]);    
+                });
+                break;
+            case 'DELETE':
+                common.sessions[session].login = null;
+                common.sessions[session].role = 0;
+                lib.sendJson(rep, common.sessions[session]);
+                break;                
+            default:
+                lib.sendError(rep, 400, 'Invalid method');
+        }
+    },
+
     'person': function(rep, method, query, payload, session) {
         switch(method) {
             case 'GET':
