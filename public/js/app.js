@@ -1,111 +1,40 @@
-var app = angular.module("app2020", ['ngSanitize', 'ngAnimate', 'ui.bootstrap']);
+var app = angular.module("app2020", ['ngSanitize', 'ngAnimate', 'ngRoute', 'ui.bootstrap']);
 
-app.controller("Ctrl1", ["$scope", "$http", "$uibModal", function($scope, $http, $uibModal) {
+// router menu
+app.constant('routes', [
+    { route: '/', templateUrl: 'homeView.html', controller: 'HomeCtrl', controllerAs: 'ctrl', menu: '<i class="fa fa-lg fa-home"></i>' },
+    { route: '/example', templateUrl: 'exampleView.html', controller: 'ExampleCtrl', controllerAs: 'ctrl', menu: 'Przykład' },
+	{ route: '/persons', templateUrl: 'personsView.html', controller: 'PersonsCtrl', controllerAs: 'ctrl', menu: 'Osoby' }
+]);
+
+// router installation
+app.config(['$routeProvider', '$locationProvider', 'routes', function($routeProvider, $locationProvider, routes) {
+    $locationProvider.hashPrefix('');
+	for(var i in routes) {
+		$routeProvider.when(routes[i].route, routes[i]);
+	}
+	$routeProvider.otherwise({ redirectTo: '/' });
+}]);
+
+// SP skeleton controller
+app.controller("BodyCtrl", ['$scope', '$location', 'routes', function($scope, $location, routes) {
     var ctrl = this;
 
-    ctrl.persons = [];
-    ctrl.skip = 0;
-    ctrl.limit = 10;
-    ctrl.search = '';
-    ctrl.filtered = 0;
-    ctrl.count = 0;
-
-    ctrl.loadPersons = function() {
-        $http.get("/persons?skip=" + ctrl.skip + "&limit=" + ctrl.limit + "&search=" + ctrl.search).then(
-            function(rep) {
-                ctrl.persons = rep.data.data;
-                ctrl.filtered = rep.data.filtered;
-                ctrl.count = rep.data.count;
-                        },
-            function(err) {
-                ctrl.persons = [];
-                ctrl.filtered = 0;
-                ctrl.count = 0;                        }
-        );
-    };
-
-    ctrl.loadPersonsWithZeroSkip = function() {
-        ctrl.skip = 0;
-        ctrl.loadPersons();
-    };
-
-    ctrl.loadPersons();
-
-    ctrl.prev = function() {
-        ctrl.skip -= ctrl.limit;
-        ctrl.loadPersons();
-    };
-
-    ctrl.next = function() {
-        ctrl.skip += ctrl.limit;
-        ctrl.loadPersons();
-    };
-
-    ctrl.personClick = function(_id) {
-        $http.get('/person?_id=' + _id).then(
-            function(rep) {
-                var options = { data: rep.data };
-                // open modal window with person data
-                editPerson(options);
-            },
-            function() {}
-        );
-    };
-
-    ctrl.newPerson = function() {
-        var options = { data: { firstName: '', lastName: '', email: '', yearofbirth: 1990 }, noDelete: true };
-        // open modal window with empty data
-        editPerson(options);
+    // navigation building
+    ctrl.menu = [];
+    for (var i in routes) {
+        ctrl.menu.push({route: routes[i].route, title: routes[i].menu});
     }
+    
+    // controlling collapsed/not collapsed status
+    ctrl.isCollapsed = true;
+    $scope.$on('$routeChangeSuccess', function () {
+        ctrl.isCollapsed = true;
+    });
 
-    var editPerson = function(options) {
+    // determining which menu position is active
+    ctrl.navClass = function(page) {
+        return page === $location.path() ? 'active' : '';
+    };
 
-        var modalInstance = $uibModal.open({
-            animation: true,
-            ariaLabelledBy: 'modal-title-top',
-            ariaDescribedBy: 'modal-body-top',
-            templateUrl: 'editPersonDialog.html',
-            controller: 'EditPersonCtrl',
-            controllerAs: 'ctrl',
-            resolve: {
-                editPersonOptions: function () {
-                    return options;
-                }
-            }
-        });
-
-        modalInstance.result.then(
-            function (ret) {
-                if(ret == 'delete') {
-                    $http.delete('/person?_id='+options.data._id).then(
-                        function(ret) {
-                            ctrl.loadPersons();
-                        },
-                        function(err) {}
-                    );
-                } else if(ret == 'save') {
-                    if(options.data._id) {
-                        $http.put('/person', options.data).then(
-                            function(ret) {
-                                var n = ctrl.persons.findIndex(function(el) { 
-                                    return el._id == ret.data._id 
-                                }); // find the first element with specified _id
-                                ctrl.persons[n] = ret.data;
-                            },
-                            function(err) {}
-                        );
-                    } else {
-                        $http.post('/person', options.data).then(
-                            function(ret) {
-                                ctrl.loadPersons();
-                            },
-                            function(err) {}
-                        );
-                    }
-                }
-            },
-            function (ret) {}
-        );
-
-}
 }]);
